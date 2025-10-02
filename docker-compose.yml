@@ -4,10 +4,12 @@ services:
   db:
     image: postgres:15
     container_name: money_postgres
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: moneydb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 282901
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -16,9 +18,11 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: money_pgadmin
+    env_file:
+      - .env
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "5050:80"   # Access at http://localhost:5050
     depends_on:
