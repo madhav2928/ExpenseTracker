@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/moneydb
+    username: postgres
+    password: 282901
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Flyway will pick up migrations from src/main/resources/db/migration
+flyway:
+  enabled: true
+
+server:
+  port: 8080
+
+# change to a secure random secret for production
+jwt:
+  secret: verySecretChangeMe123!
+  expiration-ms: 86400000 # 1 day
