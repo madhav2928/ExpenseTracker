@@ -22,5 +22,5 @@ server:
 
 # change to a secure random secret for production
 jwt:
-  secret: verySecretChangeMe123!
+  secret: ${JWT_SECRET}
   expiration-ms: 86400000 # 1 day
