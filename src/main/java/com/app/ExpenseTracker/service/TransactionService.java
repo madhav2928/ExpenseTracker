@@ -9,6 +9,7 @@ public interface TransactionService {
     TransactionResponseDTO createTransaction(String username, TransactionRequestDTO dto);
     TransactionResponseDTO getTransaction(String username, Long id);
     Page<TransactionResponseDTO> listTransactions(String username, Pageable pageable);
+    Page<TransactionResponseDTO> listTransactionsByCategory(String username, Long categoryId, Pageable pageable);
     TransactionResponseDTO updateTransaction(String username, Long id, TransactionRequestDTO dto);
     void deleteTransaction(String username, Long id);
 }

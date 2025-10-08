@@ -29,7 +29,11 @@ public class TransactionEntity {
     private Instant txnDate = Instant.now();
 
     private String type; // DEBIT / CREDIT
-    private String category;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     private String source;
 
     @Column(name = "created_at")
@@ -52,8 +56,8 @@ public class TransactionEntity {
     public void setTxnDate(Instant txnDate) { this.txnDate = txnDate; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
     public String getSource() { return source; }
     public void setSource(String source) { this.source = source; }
     public Instant getCreatedAt() { return createdAt; }

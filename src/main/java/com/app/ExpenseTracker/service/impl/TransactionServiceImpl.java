@@ -24,6 +24,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     @Override
     public TransactionResponseDTO createTransaction(String username, TransactionRequestDTO dto) {
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
@@ -42,7 +45,18 @@ public class TransactionServiceImpl implements TransactionService {
         t.setAmount(dto.getAmount());
         t.setCurrency(dto.getCurrency());
         t.setType(dto.getType());
-        t.setCategory(dto.getCategory() == null ? "Uncategorized" : dto.getCategory());
+
+        Category category;
+        if (dto.getCategoryId() != null) {
+            category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new NotFoundException("Category not found"));
+        } else {
+            // Default to global "Uncategorized"
+            category = categoryRepository.findByNameAndUserId("Uncategorized", null)
+                    .orElseThrow(() -> new NotFoundException("Default category not found"));
+        }
+        t.setCategory(category);
+
         t.setSource(dto.getSource());
         t.setTxnDate(Instant.now());
         transactionRepository.save(t);
@@ -78,6 +92,13 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public Page<TransactionResponseDTO> listTransactionsByCategory(String username, Long categoryId, Pageable pageable) {
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        Page<TransactionEntity> page = transactionRepository.findByUserIdAndCategoryId(user.getId(), categoryId, pageable);
+        return page.map(this::toDto);
+    }
+
+    @Override
     public TransactionResponseDTO updateTransaction(String username, Long id, TransactionRequestDTO dto) {
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         TransactionEntity t = transactionRepository.findById(id)
@@ -88,7 +109,13 @@ public class TransactionServiceImpl implements TransactionService {
         t.setAmount(dto.getAmount());
         t.setCurrency(dto.getCurrency());
         t.setType(dto.getType());
-        t.setCategory(dto.getCategory() == null ? t.getCategory() : dto.getCategory());
+
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new NotFoundException("Category not found"));
+            t.setCategory(category);
+        } // else keep existing
+
         t.setSource(dto.getSource());
         transactionRepository.save(t);
         return toDto(t);
@@ -111,7 +138,8 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setAmount(t.getAmount());
         dto.setCurrency(t.getCurrency());
         dto.setType(t.getType());
-        dto.setCategory(t.getCategory());
+        dto.setCategoryId(t.getCategory() != null ? t.getCategory().getId() : null);
+        dto.setCategoryName(t.getCategory() != null ? t.getCategory().getName() : null);
         dto.setSource(t.getSource());
         dto.setTxnDate(t.getTxnDate());
         return dto;

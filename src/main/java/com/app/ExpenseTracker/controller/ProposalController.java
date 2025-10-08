@@ -19,6 +19,7 @@ public class ProposalController {
     @Autowired private ProposalRepository proposalRepository;
     @Autowired private AccountRepository accountRepository;
     @Autowired private TransactionRepository transactionRepository;
+    @Autowired private CategoryRepository categoryRepository;
 
     @GetMapping
     public List<Proposal> list(Authentication auth) {
@@ -55,7 +56,9 @@ public class ProposalController {
         t.setAmount(p.getAmount() == null ? BigDecimal.ZERO : p.getAmount());
         t.setCurrency(p.getCurrency());
         t.setType("DEBIT");
-        t.setCategory("Uncategorized");
+
+        Category category = categoryRepository.findByNameAndUserId("Uncategorized", null).orElseThrow();
+        t.setCategory(category);
         t.setSource("PROPOSAL");
         t.setTxnDate(Instant.now());
         transactionRepository.save(t);

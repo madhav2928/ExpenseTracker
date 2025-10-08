@@ -10,7 +10,8 @@ public class TransactionResponseDTO {
     private BigDecimal amount;
     private String currency;
     private String type;
-    private String category;
+    private Long categoryId;
+    private String categoryName;
     private String source;
     private Instant txnDate;
 
@@ -27,8 +28,10 @@ public class TransactionResponseDTO {
     public void setCurrency(String currency) { this.currency = currency; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
     public String getSource() { return source; }
     public void setSource(String source) { this.source = source; }
     public Instant getTxnDate() { return txnDate; }

@@ -18,8 +18,7 @@ public class TransactionRequestDTO {
 
     private Long accountId; // optional; if null backend picks default
 
-    @Size(max = 255)
-    private String category;
+    private Long categoryId; // optional; if null backend picks default
 
     @Size(max = 255)
     private String type = "DEBIT";
@@ -36,8 +35,8 @@ public class TransactionRequestDTO {
     public void setCurrency(String currency) { this.currency = currency; }
     public Long getAccountId() { return accountId; }
     public void setAccountId(Long accountId) { this.accountId = accountId; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     public String getSource() { return source; }
