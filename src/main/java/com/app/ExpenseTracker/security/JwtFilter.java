@@ -23,10 +23,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private com.app.ExpenseTracker.service.TokenBlacklistService tokenBlacklistService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain chain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
         String username = null;
@@ -42,6 +45,13 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Check if token is blacklisted
+            if (tokenBlacklistService.isTokenRevoked(token)) {
+                // Token is revoked, do not authenticate
+                chain.doFilter(request, response);
+                return;
+            }
+
             UserDetails ud = userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(token, ud)) {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

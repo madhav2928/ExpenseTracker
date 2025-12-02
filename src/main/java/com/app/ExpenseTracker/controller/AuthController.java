@@ -16,11 +16,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired private AuthenticationManager authManager;
-    @Autowired private UserRepository userRepository;
-    @Autowired private AccountRepository accountRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private AuthenticationManager authManager;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private com.app.ExpenseTracker.service.TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest req) {
@@ -47,13 +54,22 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody AuthRequest req) {
         try {
             Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
             var userDetails = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
             String token = jwtUtil.generateToken(userDetails);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenBlacklistService.revokeToken(token);
+            return ResponseEntity.ok("Logged out successfully");
+        }
+        return ResponseEntity.badRequest().body("Invalid token");
     }
 }
