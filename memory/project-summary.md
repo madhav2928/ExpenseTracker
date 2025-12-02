@@ -1,102 +1,156 @@
-# 💰 Expense Tracker Backend API - Comprehensive Project Summary
+# 💰 Expense Tracker - Full-Stack Application
 
 ## 📋 Project Overview
 
-**Expense Tracker** is a robust, production-ready backend API built with Spring Boot that provides comprehensive personal finance management capabilities. The application enables users to track, categorize, and analyze their financial transactions through a secure RESTful API.
+**Expense Tracker** is a comprehensive full-stack personal finance management application featuring a Spring Boot backend API and a modern Next.js progressive web application (PWA) frontend. The platform enables users to track, categorize, and analyze their financial transactions with intelligent AI-powered expense processing.
 
 ### 🎯 Core Purpose
 - **Personal Finance Management**: Complete expense tracking and financial transaction management
-- **Multi-Account Support**: Handle multiple financial accounts (cash, bank accounts, credit cards)
-- **Intelligent Processing**: Smart expense categorization and proposal system
-- **Secure Authentication**: JWT-based user authentication and authorization
-- **Scalable Architecture**: Clean, layered architecture ready for enterprise use
+- **Multi-Account Support**: Handle multiple financial accounts (Cash, Checking, Savings, Credit Cards)
+- **Intelligent Processing**: AI-powered expense ingestion with proposal review system
+- **Secure Authentication**: JWT-based authentication with token blacklisting for secure logout
+- **Modern UI/UX**: Premium mobile-first Progressive Web App with dark mode and glassmorphism
+- **Cross-Platform**: Web-based application installable on mobile devices
 
 ### 📊 Key Metrics
-- **Framework**: Spring Boot 3.5.6
-- **Language**: Java 17
+- **Backend**: Spring Boot 3.5.6, Java 17
+- **Frontend**: Next.js 16.0.6, React 19.2.0, Tailwind CSS v4
 - **Database**: PostgreSQL 15
-- **Authentication**: JWT tokens
+- **Authentication**: JWT tokens with blacklist support  
 - **Containerization**: Docker & Docker Compose
-- **Build Tool**: Maven
+- **Build Tools**: Maven (Backend), npm (Frontend)
 
 ---
 
-## 🏗️ Architecture & Design
+## 🏗️ Architecture & Project Structure
 
-### Layered Architecture Pattern
+### Monorepo Structure
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Controllers   │ -> │    Services     │ -> │  Repositories   │
-├─────────────────┤    ├─────────────────┤    ├─────────────────┤
-│ AuthController  │    │ UserService     │    │ UserRepository  │
-│ AccountCtrl     │    │ AccountService  │    │ AccountRepo     │
-│ TransactionCtrl │    │ TransactionSvc  │    │ TransactionRepo │
-│ CategoryCtrl    │    │ CategoryService │    │ CategoryRepo    │
-│ IngestCtrl      │    │                 │    │ ProposalRepo    │
-│ ProposalCtrl    │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                  │
-                       ┌─────────────────┐
-                       │   PostgreSQL    │
-                       │    Database     │
-                       └─────────────────┘
+ExpenseTracker/
+├── src/                          # Backend source code (Spring Boot)
+│   ├── main/java/com/app/ExpenseTracker/
+│   │   ├── controller/          # REST API controllers
+│   │   ├── service/             # Business logic
+│   │   ├── repository/          # Data access layer
+│   │   ├── entity/              # JPA entities
+│   │   ├── dto/                 # Data transfer objects
+│   │   ├── security/            # JWT & auth components
+│   │   ├── exception/           # Error handling
+│   │   └── config/              # Application configuration
+│   └── resources/
+│       ├── application.yml      # Spring configuration
+│       └── db/migration/        # Flyway database migrations
+├── frontend/                     # Next.js 16 application
+│   ├── src/
+│   │   ├── app/                 # Next.js App Router pages
+│   │   │   ├── login/          # Authentication pages
+│   │   │   ├── register/
+│   │   │   ├── accounts/       # Account management
+│   │   │   ├── transactions/   # Transaction CRUD
+│   │   │   ├── categories/     # Category management
+│   │   │   ├── ingest/         # AI expense processing
+│   │   │   ├── globals.css     # Global styles & design system
+│   │   │   ├── layout.tsx      # Root layout with auth
+│   │   │   └── page.tsx        # Dashboard
+│   │   ├── components/         # Reusable React components
+│   │   │   └── BottomNav.tsx   # Mobile bottom navigation
+│   │   ├── context/            # React context providers
+│   │   │   └── AuthContext.tsx # Authentication state management
+│   │   └── lib/                # Utility functions
+│   │       └── api.ts          # API client with JWT handling
+│   ├── public/                  # Static assets
+│   │   └── manifest.json       # PWA manifest
+│   ├── next.config.ts          # Next.js configuration & API proxy
+│   ├── tailwind.config.ts      # Tailwind CSS configuration
+│   └── package.json            # Frontend dependencies
+├── docker-compose.yml          # PostgreSQL & PgAdmin containers
+├── pom.xml                     # Maven dependencies
+├── .env                        # Environment variables
+└── README.md                   # Project documentation
 ```
 
-### Design Patterns Implemented
-- **MVC Pattern**: Clear separation of concerns with Controllers, Services, and Repositories
-- **DTO Pattern**: Data Transfer Objects for API communication
-- **Repository Pattern**: Data access abstraction
-- **Service Layer**: Business logic encapsulation
-- **Dependency Injection**: Spring's IoC container for loose coupling
+### System Architecture
+```
+┌──────────────────────────────────────────────────────────┐
+│                    Frontend Layer                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Next.js 16 App (React 19)                      │    │
+│  │  - App Router                                    │    │
+│  │  - Server/Client Components                     │    │
+│  │  - PWA Support                                   │    │
+│  │  - API Proxy (/api -> localhost:8081/api)      │    │
+│  └─────────────────────────────────────────────────┘    │
+└───────────────────────┬──────────────────────────────────┘
+                        │ HTTP/REST + JWT
+┌───────────────────────▼──────────────────────────────────┐
+│                    Backend Layer                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  Controllers (REST API Endpoints)                 │   │
+│  │  - AuthController (/api/auth)                     │   │
+│  │  - AccountController (/api/accounts)              │   │
+│  │  - TransactionController (/api/transactions)      │   │
+│  │  - CategoryController (/api/categories)           │   │
+│  │  - IngestController (/api/ingest)                 │   │
+│  │  - ProposalController (/api/proposals)            │   │
+│  └──────────────────────┬───────────────────────────┘   │
+│  ┌──────────────────────▼───────────────────────────┐   │
+│  │  Services (Business Logic)                        │   │
+│  │  - AccountService, TransactionService             │   │
+│  │  - CategoryService, TokenBlacklistService         │   │
+│  └──────────────────────┬───────────────────────────┘   │
+│  ┌──────────────────────▼───────────────────────────┐   │
+│  │  Repositories (JPA Data Access)                   │   │
+│  │  - UserRepository, AccountRepository              │   │
+│  │  - TransactionRepository, CategoryRepository      │   │
+│  │  - ProposalRepository, RevokedTokenRepository     │   │
+│  └──────────────────────┬───────────────────────────┘   │
+└────────────────────────▼────────────────────────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────┐
+│  Database Layer - PostgreSQL 15                         │
+│  - Users, Accounts, Transactions, Categories            │
+│  - Proposals, RevokedTokens (Logout Support)            │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## 🛠️ Technology Stack
 
-### Core Framework & Runtime
+### Backend Technologies
 | Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
+|-----------|-----------|---------|---------|
 | **Framework** | Spring Boot | 3.5.6 | Main application framework |
 | **Language** | Java | 17 | Programming language |
-| **Build Tool** | Maven | 3.6+ | Dependency management & build |
-| **JDK** | OpenJDK | 17 | Java runtime environment |
-
-### Security & Authentication
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| **Security** | Spring Security | Latest | Authentication & Authorization |
-| **JWT** | java-jwt | 4.5.0 | Token-based authentication |
-| **Password Encoding** | BCrypt | - | Secure password hashing |
-
-### Database & Persistence
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
 | **Database** | PostgreSQL | 15 | Primary data store |
-| **ORM** | Hibernate/JPA | - | Object-relational mapping |
+| **ORM** | Hibernate/JPA | Latest | Object-relational mapping |
 | **Migration** | Flyway | Latest | Database version control |
-| **Connection Pool** | HikariCP | - | Database connection pooling |
-
-### Web & API
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| **Web Framework** | Spring Web | - | REST API development |
-| **Validation** | Bean Validation | - | Input validation |
-| **JSON Processing** | Jackson | 2.20.0 | JSON serialization/deserialization |
-| **Date/Time** | java.time | - | Date and time handling |
-
-### Development & Testing
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
+| **Security** | Spring Security | Latest | Authentication & Authorization |
+| **JWT** | java-jwt (Auth0) | 4.5.0 | Token-based authentication |
+| **Password** | BCrypt | - | Secure password hashing |
+| **JSON** | Jackson | 2.20.0 | JSON processing |
+| **Build Tool** | Maven | 3.6+ | Dependency management |
 | **DevTools** | Spring Boot DevTools | - | Development productivity |
-| **Testing** | Spring Boot Test | - | Unit and integration testing |
-| **Security Testing** | Spring Security Test | - | Security testing utilities |
 
-### Containerization & Deployment
+### Frontend Technologies
 | Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
+|-----------|-----------|---------|---------|
+| **Framework** | Next.js | 16.0.6 | React framework with App Router |
+| **UI Library** | React | 19.2.0 | Component-based UI |
+| **Styling** | Tailwind CSS | v4 | Utility-first CSS framework |
+| **Icons** | Lucide React | 0.555.0 | Icon library |
+| **Animations** | Framer Motion | 12.23.25 | Animation library |
+| **Date Handling** | date-fns | 4.1.0 | Date formatting utilities |
+| **Class Utils** | clsx, tailwind-merge | Latest | Conditional class handling |
+| **Build Tool** | npm | Latest | Package management |
+| **Language** | TypeScript | v5 | Type-safe JavaScript |
+
+### DevOps & Deployment
+| Component | Technology | Version | Purpose |
+|-----------|-----------|---------|---------|
 | **Containerization** | Docker | Latest | Application containerization |
 | **Orchestration** | Docker Compose | Latest | Multi-container deployment |
-| **Database Admin** | PgAdmin4 | Latest | Database administration interface |
+| **Database Admin** | PgAdmin4 | Latest | Database administration |
 
 ---
 
@@ -104,7 +158,7 @@
 
 ### Core Tables
 
-#### Users Table
+#### 1. Users
 ```sql
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
@@ -113,27 +167,23 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-**Purpose**: Stores user account information and credentials
-**Relationships**: Referenced by accounts, transactions, proposals, categories
-**Constraints**: Email must be unique
+**Purpose**: User account information and credentials
 
-#### Accounts Table
+#### 2. Accounts
 ```sql
 CREATE TABLE accounts (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
-    type VARCHAR(50),  -- CASH, CHECKING, SAVINGS, CREDIT_CARD, etc.
-    last4 VARCHAR(10), -- Last 4 digits of account/card number
+    type VARCHAR(50),
+    last4 VARCHAR(10),
     balance_estimate NUMERIC(18,2) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-**Purpose**: Manages user's financial accounts
-**Relationships**: Referenced by transactions
-**Constraints**: user_id is required, CASCADE delete
+**Purpose**: User's financial accounts (Cash, Checking, Savings, Credit Cards)
 
-#### Transactions Table
+#### 3. Transactions
 ```sql
 CREATE TABLE transactions (
     id BIGSERIAL PRIMARY KEY,
@@ -143,32 +193,28 @@ CREATE TABLE transactions (
     amount NUMERIC(18,2) NOT NULL,
     currency VARCHAR(10),
     txn_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    type VARCHAR(20),  -- DEBIT, CREDIT
+    type VARCHAR(20),
     category_id BIGINT REFERENCES categories(id) ON DELETE SET NULL,
-    source VARCHAR(50), -- MANUAL, IMPORTED, API
+    source VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
-**Purpose**: Records all financial transactions
-**Relationships**: Belongs to user, account, category
-**Constraints**: user_id required, category_id optional
+**Purpose**: Financial transactions with account and category associations
 
-#### Categories Table
+#### 4. Categories
 ```sql
 CREATE TABLE categories (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT,  -- NULL for global categories
+    user_id BIGINT,
     name VARCHAR(255) NOT NULL,
-    parent VARCHAR(255),  -- For hierarchical categories
+    parent VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(name, user_id)  -- Prevent duplicate categories per user
+    UNIQUE(name, user_id)
 );
 ```
-**Purpose**: Expense categorization system
-**Relationships**: Referenced by transactions
-**Constraints**: Unique name per user, supports global categories
+**Purpose**: Expense categorization (user-specific or global)
 
-#### Proposals Table
+#### 5. Proposals
 ```sql
 CREATE TABLE proposals (
     id BIGSERIAL PRIMARY KEY,
@@ -177,636 +223,321 @@ CREATE TABLE proposals (
     currency VARCHAR(10),
     merchant VARCHAR(255),
     account_hint VARCHAR(255),
-    parsed_json TEXT,  -- Raw parsed data
-    status VARCHAR(50) DEFAULT 'PENDING',  -- PENDING, ACCEPTED, REJECTED
+    parsed_json TEXT,
+    status VARCHAR(50) DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     responded_at TIMESTAMP
 );
 ```
-**Purpose**: Intelligent expense processing proposals
-**Relationships**: Belongs to user
-**Constraints**: user_id required
+**Purpose**: AI-generated expense proposals awaiting user approval
 
-### Database Relationships
+#### 6. Revoked Tokens (NEW)
+```sql
+CREATE TABLE revoked_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    token VARCHAR(1024) NOT NULL UNIQUE,
+    revoked_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL
+);
+CREATE INDEX idx_revoked_tokens_token ON revoked_tokens(token);
+CREATE INDEX idx_revoked_tokens_expires_at ON revoked_tokens(expires_at);
 ```
-users (1) ──── (N) accounts
-   │
-   ├── (N) transactions
-   │
-   ├── (N) proposals
-   │
-   └── (N) categories
-
-accounts (1) ──── (N) transactions
-categories (1) ──── (N) transactions
-```
-
-### Indexes & Performance
-- Primary keys on all tables
-- Foreign key indexes automatically created
-- Additional index on `transactions.category_id` for performance
-- Unique constraint on `categories(name, user_id)`
+**Purpose**: JWT token blacklist for secure logout functionality
 
 ---
 
 ## 🔗 API Endpoints
 
-### Authentication Endpoints (`/api/auth`)
+### Authentication (`/api/auth`)
 
 #### POST `/api/auth/register`
-**Purpose**: User registration
-**Request Body**:
-```json
-{
-  "email": "user@example.com",
-  "password": "securepassword"
-}
-```
-**Response**: Success message or error
-**Side Effects**: Creates user and default "Cash" account
+- **Purpose**: User registration
+- **Request**: `{ email, password }`
+- **Response**: Success message
+- **Side Effect**: Creates user + default "Cash" account
 
 #### POST `/api/auth/login`
-**Purpose**: User authentication
-**Request Body**:
-```json
-{
-  "email": "user@example.com",
-  "password": "securepassword"
-}
-```
-**Response**:
-```json
-{
-  "token": "jwt_token_here"
-}
-```
+- **Purpose**: User authentication
+- **Request**: `{ email, password }`
+- **Response**: `{ token: "jwt_token" }`
+
+#### POST `/api/auth/logout` 🆕
+- **Purpose**: Secure logout
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: Success message
+- **Side Effect**: Blacklists JWT token
 
 ### Account Management (`/api/accounts`)
-**Authentication**: Required (JWT token)
-
-#### POST `/api/accounts`
-**Purpose**: Create new account
-**Request Body**:
-```json
-{
-  "name": "Checking Account",
-  "type": "CHECKING",
-  "last4": "1234",
-  "balanceEstimate": 1500.00
-}
-```
-
-#### GET `/api/accounts`
-**Purpose**: List user's accounts
-**Response**: Array of account objects
-
-#### GET `/api/accounts/{id}`
-**Purpose**: Get specific account details
-
-#### PUT `/api/accounts/{id}`
-**Purpose**: Update account information
-
-#### DELETE `/api/accounts/{id}`
-**Purpose**: Delete account (cascade deletes transactions)
+**Auth Required**: ✅
+- `POST /api/accounts` - Create account
+- `GET /api/accounts` - List user accounts
+- `GET /api/accounts/{id}` - Get account details
+- `PUT /api/accounts/{id}` - Update account
+- `DELETE /api/accounts/{id}` - Delete account
 
 ### Transaction Management (`/api/transactions`)
-**Authentication**: Required
+**Auth Required**: ✅
+- `POST /api/transactions` - Create transaction
+- `GET /api/transactions` - List with pagination/filters
+- `GET /api/transactions/{id}` - Get transaction
+- `PUT /api/transactions/{id}` - Update transaction
+- `DELETE /api/transactions/{id}` - Delete transaction
 
-#### POST `/api/transactions`
-**Purpose**: Create new transaction
-**Request Body**:
-```json
-{
-  "accountId": 1,
-  "merchant": "Starbucks",
-  "amount": -5.50,
-  "currency": "USD",
-  "txnDate": "2025-01-15T10:30:00Z",
-  "type": "DEBIT",
-  "categoryId": 2
-}
-```
-
-#### GET `/api/transactions`
-**Purpose**: List transactions with pagination
-**Query Parameters**:
-- `page`, `size` - Pagination
-- `accountId` - Filter by account
-- `categoryId` - Filter by category
-- `startDate`, `endDate` - Date range
-- `merchant` - Merchant filter
-
-#### GET `/api/transactions/{id}`
-**Purpose**: Get transaction details
-
-#### PUT `/api/transactions/{id}`
-**Purpose**: Update transaction
-
-#### DELETE `/api/transactions/{id}`
-**Purpose**: Delete transaction
+**Query Parameters**: `page`, `size`, `accountId`, `categoryId`, `startDate`, `endDate`, `merchant`
 
 ### Category Management (`/api/categories`)
-**Authentication**: Required
-
-#### POST `/api/categories`
-**Purpose**: Create expense category
-
-#### GET `/api/categories`
-**Purpose**: List user's categories
-
-#### GET `/api/categories/{id}`
-**Purpose**: Get category details
-
-#### GET `/api/categories/{id}/transactions`
-**Purpose**: Get transactions for category
-
-#### PUT `/api/categories/{id}`
-**Purpose**: Update category
-
-#### DELETE `/api/categories/{id}`
-**Purpose**: Delete category
+**Auth Required**: ✅
+- `POST /api/categories` - Create category
+- `GET /api/categories` - List user categories
+- `GET /api/categories/{id}` - Get category
+- `GET /api/categories/{id}/transactions` - Get category transactions
+- `PUT /api/categories/{id}` - Update category
+- `DELETE /api/categories/{id}` - Delete category
 
 ### Expense Ingestion (`/api/ingest`)
-**Authentication**: Required
-
-#### POST `/api/ingest`
-**Purpose**: Submit expense for intelligent processing
-**Request Body**:
-```json
-{
-  "amount": 25.50,
-  "currency": "USD",
-  "merchant": "Starbucks",
-  "accountHint": "1234",
-  "rawText": "Coffee purchase at Starbucks"
-}
-```
-**Response**: Processing result or proposal ID
+**Auth Required**: ✅
+- `POST /api/ingest` - Submit expense for AI processing
+  - **Request**: `{ amount, currency, merchant, accountHint, rawText }`
+  - **Response**: Proposal ID or processing result
 
 ### Proposal Management (`/api/proposals`)
-**Authentication**: Required
-
-#### GET `/api/proposals`
-**Purpose**: List pending proposals
-
-#### POST `/api/proposals/{id}/accept`
-**Purpose**: Accept and convert proposal to transaction
+**Auth Required**: ✅
+- `GET /api/proposals` - List pending proposals
+- `POST /api/proposals/{id}/accept` - Accept and convert to transaction
 
 ---
 
-## ⚙️ Configuration & Environment
+## 🎨 Frontend Application
 
-### Application Configuration (`application.yml`)
-```yaml
-spring:
-  config:
-    import: optional:file:.env[.properties]
-  datasource:
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: none  # Flyway manages schema
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+### Design System
+- **Theme**: Dark mode with "Cyber/Fintech" aesthetics
+- **Colors**: Deep blues/blacks (`#020617`) with neon indigo accents (`#6366f1`)
+- **Typography**: Inter font family (Google Fonts)
+- **Effects**: Glassmorphism, blur effects, smooth gradients
+- **Layout**: Mobile-first responsive design
 
-flyway:
-  enabled: true
+### Key Features
 
-server:
-  port: 8081
+#### 1. Authentication
+- **Login Page** (`/login`): Email/password authentication with auto-redirect
+- **Register Page** (`/register`): User registration with auto-login
+- **Protected Routes**: Automatic redirect to login for unauthenticated users
+- **Logout**: Secure logout with backend token blacklisting
 
-jwt:
-  secret: ${JWT_SECRET}
-  expiration-ms: 86400000  # 24 hours
-```
+#### 2. Dashboard (`/`)
+- **Total Balance**: Aggregated balance across all accounts
+- **Recent Transactions**: Latest 5 transactions with infinite scroll
+- **Quick Actions**: AI Ingest button, Logout button
+- **Real-time Updates**: Fetches data on mount
 
-### Environment Variables (`.env`)
-```bash
-# Database Configuration
-POSTGRES_DB=moneydb
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=282901
+#### 3. Transaction Management
+- **List** (`/transactions`): Infinite scroll pagination, filtering support
+- **Add** (`/transactions/add`): Manual transaction entry with account/category selection
+- **Type Support**: DEBIT (expenses) and CREDIT (income)
+- **Date Handling**: Transaction date selection
 
-# PgAdmin Configuration
-PGADMIN_DEFAULT_EMAIL=admin@admin.com
-PGADMIN_DEFAULT_PASSWORD=admin
+#### 4. AI Expense Ingestion (`/ingest`)
+- **Natural Language Input**: "Lunch $15 at Subway"
+- **Proposal Review**: Tab-based UI for pending proposals
+- **Accept/Reject**: Review and approve AI suggestions
 
-# JWT Configuration
-JWT_SECRET=verySecretChangeMe123!
-```
+#### 5. Account Management (`/accounts`)
+- **List Accounts**: View all accounts with balances
+- **Add Account** (`/accounts/add`): Create new accounts (Cash, Checking, Savings, Credit Card)
+- **Delete**: Remove accounts
 
-### Docker Compose Setup (`docker-compose.yml`)
-```yaml
-version: '3.8'
-services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
+#### 6. Category Management (`/categories`)
+- **List Categories**: User-defined expense categories
+- **Add Category** (`/categories/add`): Create custom categories
+- **Delete**: Remove categories
+- **Bottom Nav Tab**: Direct access from navigation
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
-```
+### Progressive Web App (PWA)
+- **Manifest**: `/public/manifest.json` for installation
+- **Mobile Install**: "Add to Home Screen" on iOS/Android
+- **Standalone Mode**: Runs like a native app
+- **Theme Color**: Deep blue (`#020617`)
+- **Viewport**: Optimized for mobile devices
 
----
-
-## 📁 Code Structure Analysis
-
-### Package Organization
-```
-src/main/java/com/app/ExpenseTracker/
-├── ExpenseTrackerApplication.java          # Main application class
-├── config/                                 # Configuration classes
-│   ├── CorsConfig.java                    # CORS configuration
-│   └── SecurityConfig.java                # Security configuration
-├── controller/                            # REST controllers
-│   ├── AuthController.java                # Authentication endpoints
-│   ├── AccountController.java             # Account management
-│   ├── TransactionController.java         # Transaction CRUD
-│   ├── CategoryController.java            # Category management
-│   ├── IngestController.java              # Expense ingestion
-│   └── ProposalController.java            # Proposal management
-├── dto/                                   # Data Transfer Objects
-│   ├── AuthRequest.java                   # Login/registration
-│   ├── AuthResponse.java                  # Authentication response
-│   ├── AccountDTO.java                    # Account data
-│   ├── TransactionRequestDTO.java         # Transaction input
-│   ├── TransactionResponseDTO.java        # Transaction output
-│   ├── CategoryDTO.java                   # Category data
-│   └── IngestRequest.java                 # Expense ingestion
-├── entity/                                # JPA entities
-│   ├── User.java                          # User entity
-│   ├── Account.java                       # Account entity
-│   ├── TransactionEntity.java             # Transaction entity
-│   ├── Category.java                      # Category entity
-│   └── Proposal.java                      # Proposal entity
-├── repository/                            # Data access layer
-│   ├── UserRepository.java                # User data access
-│   ├── AccountRepository.java             # Account data access
-│   ├── TransactionRepository.java         # Transaction data access
-│   ├── CategoryRepository.java            # Category data access
-│   └── ProposalRepository.java            # Proposal data access
-├── service/                               # Business logic layer
-│   ├── AccountService.java                # Account business logic
-│   ├── CategoryService.java               # Category business logic
-│   ├── TransactionService.java            # Transaction business logic
-│   └── impl/                              # Service implementations
-│       ├── AccountServiceImpl.java
-│       ├── CategoryServiceImpl.java
-│       └── TransactionServiceImpl.java
-├── security/                              # Security components
-│   ├── JwtUtil.java                       # JWT token utilities
-│   ├── JwtFilter.java                     # JWT authentication filter
-│   └── UserDetailsServiceImpl.java        # User details service
-├── exception/                             # Exception handling
-│   ├── GlobalExceptionHandler.java        # Global exception handling
-│   ├── ApiError.java                      # Error response format
-│   └── NotFoundException.java             # Custom not found exception
-└── resources/                             # Application resources
-    ├── application.yml                    # Main configuration
-    ├── application.properties             # Additional properties
-    └── db/migration/                      # Database migrations
-        ├── V1__init.sql                   # Initial schema
-        ├── V2__init.sql                   # Additional schema
-        └── V3__add_category_relationship.sql  # Category relationships
-```
-
-### Key Classes Analysis
-
-#### Controllers
-- **AuthController**: Handles user registration and login
-- **AccountController**: Full CRUD operations for financial accounts
-- **TransactionController**: Transaction management with filtering and pagination
-- **CategoryController**: Category management and transaction grouping
-- **IngestController**: Intelligent expense processing
-- **ProposalController**: Proposal approval workflow
-
-#### Entities
-- **User**: Core user information with email/password
-- **Account**: Financial account details with balance tracking
-- **TransactionEntity**: Complete transaction record with all metadata
-- **Category**: Hierarchical expense categorization
-- **Proposal**: Intelligent expense processing proposals
-
-#### Services
-- **AccountService**: Account business logic and validation
-- **TransactionService**: Transaction processing and categorization
-- **CategoryService**: Category management and hierarchy
-
-#### Security
-- **JwtUtil**: JWT token generation and validation
-- **JwtFilter**: Request authentication filter
-- **UserDetailsServiceImpl**: User authentication integration
-
----
-
-## 🚀 Setup & Deployment
-
-### Prerequisites
-- Java 17 or higher
-- Maven 3.6+
-- Docker & Docker Compose (recommended)
-- PostgreSQL 15 (if running locally)
-
-### Quick Start with Docker
-```bash
-# 1. Clone repository
-git clone https://github.com/madhav2928/ExpenseTracker.git
-cd ExpenseTracker
-
-# 2. Start database and admin interface
-docker-compose up -d
-
-# 3. Configure environment
-cp .env.example .env  # Edit with your values
-
-# 4. Run application
-mvn spring-boot:run
-
-# API available at: http://localhost:8081
-# PgAdmin at: http://localhost:5050
-```
-
-### Manual Setup
-```bash
-# 1. Install PostgreSQL locally
-# 2. Create database and user
-createdb moneydb
-createuser postgres
-# 3. Run with Maven
-mvn clean install
-mvn spring-boot:run
-```
-
-### Production Deployment
-```bash
-# Build for production
-mvn clean package -Pprod
-
-# Run production build
-java -jar target/ExpenseTracker-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
-```
-
----
-
-## 🔄 Database Migrations
-
-### Migration History
-
-#### V1__init.sql - Initial Schema
-- Created core tables: users, accounts, transactions, proposals
-- Established basic relationships and constraints
-- Set up initial data structure
-
-#### V2__init.sql - Schema Extensions
-- Additional table modifications and indexes
-- Enhanced data relationships
-
-#### V3__add_category_relationship.sql - Category System
-- Added categories table
-- Migrated transaction.category string to category_id foreign key
-- Created global "Uncategorized" category
-- Added proper foreign key constraints and indexes
-
-### Migration Strategy
-- **Versioned Migrations**: Sequential numbering (V1, V2, V3...)
-- **Idempotent Operations**: Safe to run multiple times
-- **Transactional**: All operations wrapped in transactions
-- **Backward Compatible**: Preserves existing data during migrations
+### Frontend Architecture Patterns
+- **Server/Client Components**: Next.js App Router SSR + CSR
+- **Context API**: `AuthContext` for global authentication state
+- **API Client**: Centralized fetch wrapper with JWT injection
+- **Protected Routes**: HOC pattern with `useAuth` hook
+- **Bottom Navigation**: Mobile-first navigation pattern
 
 ---
 
 ## 🔐 Security Implementation
 
-### Authentication Flow
-1. User registers with email/password
-2. Password hashed with BCrypt
-3. User logs in with credentials
-4. JWT token generated and returned
-5. Subsequent requests include Bearer token
-6. JwtFilter validates token on each request
+### Authentication & Authorization
+1. **User Registration**: Password hashed with BCrypt
+2. **Login**: JWT token generated (24h expiration)
+3. **Token Storage**: localStorage on frontend
+4. **Request Auth**: Bearer token in `Authorization` header
+5. **Token Validation**: `JwtFilter` validates on every request
+6. **Logout**: Token blacklisted in `revoked_tokens` table
 
 ### Security Features
-- **Password Encryption**: BCrypt hashing
-- **JWT Tokens**: Stateless authentication
-- **Request Validation**: Input sanitization and validation
+- **Password Encryption**: BCrypt hashing (Spring Security)
+- **JWT Tokens**: Stateless authentication with HS256
+- **Token Blacklisting**: Secure logout with database-backed revocation
+- **User Isolation**: All queries filtered by authenticated user ID
 - **CORS Configuration**: Cross-origin request handling
-- **Security Headers**: Spring Security defaults
+- **Input Validation**: Bean Validation on DTOs
 
-### Authorization
-- **User Isolation**: Users can only access their own data
-- **Account Ownership**: Transactions tied to user accounts
-- **Proposal Privacy**: Proposals isolated per user
-
----
-
-## 📈 Current Features & Roadmap
-
-### ✅ Implemented Features
-- User registration and JWT authentication
-- Multi-account financial management
-- Complete transaction CRUD operations
-- Intelligent expense categorization
-- Expense proposal system
-- Database migrations with Flyway
-- Docker containerization
-- RESTful API design
-- Input validation and error handling
-- Pagination and filtering
-
-### 🚧 Roadmap (Future Enhancements)
-- **Advanced Reporting**: Analytics and expense insights
-- **Budget Management**: Spending limits and alerts
-- **Data Export**: CSV/PDF export capabilities
-- **Search & Filtering**: Advanced transaction querying
-- **Audit Trails**: Complete transaction history
-- **Recurring Transactions**: Scheduled expense tracking
-- **Multi-Currency Support**: Enhanced currency handling
-- **API Versioning**: Versioned API endpoints
-- **Rate Limiting**: API request throttling
-- **Webhooks**: Real-time notifications
-- **Mobile API**: Optimized mobile endpoints
+### Token Blacklist System (NEW)
+- **Service**: `TokenBlacklistService`
+- **Repository**: `RevokedTokenRepository`
+- **Entity**: `RevokedToken`
+- **Flow**: 
+  1. Logout endpoint receives token
+  2. Token decoded to extract expiration
+  3. Token saved to `revoked_tokens` with expiry
+  4. `JwtFilter` checks blacklist on each request
+  5. Revoked tokens rejected automatically
 
 ---
 
-## 🧪 Testing Strategy
+## ⚙️ Configuration & Setup
 
-### Test Structure
-```
-src/test/java/com/app/ExpenseTracker/
-└── ExpenseTrackerApplicationTests.java  # Basic integration test
+### Environment Variables (`.env`)
+```bash
+# Database
+POSTGRES_DB=moneydb
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=282901
+
+# PgAdmin
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=admin
+
+# JWT
+JWT_SECRET=verySecretChangeMe123!
 ```
 
-### Testing Framework
-- **Spring Boot Test**: Integration testing
-- **JUnit 5**: Unit testing framework
-- **Spring Security Test**: Security testing utilities
-- **MockMvc**: API endpoint testing
+### Quick Start
 
-### Test Categories
-- **Unit Tests**: Individual component testing
-- **Integration Tests**: End-to-end API testing
-- **Security Tests**: Authentication and authorization
-- **Database Tests**: Repository layer testing
+#### Prerequisites
+- **Java 17+** (for backend)
+- **Node.js 18+** & npm (for frontend)
+- **Docker & Docker Compose** (recommended)
 
----
+#### 1. Start Database
+```bash
+cd ExpenseTracker
+docker-compose up -d
+```
 
-## 🔧 Development Guidelines
+#### 2. Start Backend
+```bash
+# From ExpenseTracker root
+./mvnw spring-boot:run
+# Backend runs on http://localhost:8081
+```
 
-### Code Style
-- **Java Naming Conventions**: Standard Java naming
-- **Spring Boot Best Practices**: Controller, Service, Repository patterns
-- **REST API Standards**: Proper HTTP methods and status codes
-- **Error Handling**: Consistent error response format
+#### 3. Start Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+# Frontend runs on http://localhost:3000
+```
 
-### Development Workflow
-1. **Branch Strategy**: Feature branches from main
-2. **Code Reviews**: Pull request reviews required
-3. **Testing**: Unit tests for new features
-4. **Documentation**: Update API docs for changes
+#### 4. Access Application
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8081
+- **PgAdmin**: http://localhost:5050
 
-### Commit Conventions
-- **Descriptive Messages**: Clear, concise commit messages
-- **Atomic Commits**: Single responsibility per commit
-- **Issue References**: Link commits to issues/tickets
-
----
-
-## 📊 Performance Considerations
-
-### Database Optimization
-- **Indexes**: Proper indexing on foreign keys and search fields
-- **Connection Pooling**: HikariCP for efficient connection management
-- **Query Optimization**: Efficient JPA queries and fetching strategies
-
-### API Performance
-- **Pagination**: Large dataset handling
-- **Caching**: Potential for Redis caching layer
-- **Async Processing**: Background job processing for heavy operations
-
-### Scalability
-- **Stateless Design**: Horizontal scaling capability
-- **Database Sharding**: Future multi-tenant support
-- **Microservices Ready**: Modular architecture for service extraction
-
----
-
-## 🤝 Contributing
-
-### Development Setup
-1. Fork the repository
-2. Create feature branch
-3. Make changes with tests
-4. Submit pull request
-
-### Code Quality
-- **SonarQube**: Code quality analysis
-- **Checkstyle**: Code style enforcement
-- **JaCoCo**: Code coverage reporting
-
----
-
-## 📝 API Documentation
-
-### OpenAPI/Swagger
-- **SpringDoc OpenAPI**: Automatic API documentation
-- **Interactive UI**: Swagger UI for testing endpoints
-- **Schema Generation**: JSON schema from DTOs
-
-### Documentation Updates
-- **README.md**: Project overview and setup
-- **API Docs**: Endpoint documentation
-- **Code Comments**: Comprehensive JavaDoc
-
----
-
-## 🐛 Error Handling
-
-### Global Exception Handler
-- **GlobalExceptionHandler**: Centralized error handling
-- **Custom Exceptions**: Domain-specific error types
-- **Consistent Responses**: Standardized error format
-
-### Error Response Format
-```json
-{
-  "timestamp": "2025-01-15T10:30:00Z",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Validation failed",
-  "path": "/api/transactions"
-}
+### Mobile Access
+To access on mobile device:
+```bash
+# Run frontend with network binding
+cd frontend
+npm run dev -- -H 0.0.0.0
+# Access via http://<YOUR_IP>:3000
+# Install as PWA: Safari/Chrome > Add to Home Screen
 ```
 
 ---
 
-## 🔍 Monitoring & Logging
+## 🔄 Database Migrations (Flyway)
 
-### Application Logging
-- **Spring Boot Logging**: Structured logging
-- **Log Levels**: Configurable logging levels
-- **Request Tracing**: Request ID tracking
+### Migration History
+1. **V1__init.sql**: Initial schema (users, accounts, transactions, proposals)
+2. **V2__init.sql**: Schema extensions and indexes
+3. **V3__add_category_relationship.sql**: Category system with foreign keys
+4. **V4__create_revoked_tokens.sql**: Token blacklist table for logout 🆕
 
-### Health Checks
-- **Spring Boot Actuator**: Application health endpoints
-- **Database Connectivity**: Database health checks
-- **Custom Metrics**: Business metric collection
+All migrations run automatically on application startup.
 
 ---
 
-## 🌐 Internationalization
+## ✅ Current Features
 
-### Multi-Language Support
-- **Spring i18n**: Message source configuration
-- **Locale Resolution**: Accept-Language header support
-- **Error Messages**: Localized error responses
+### Backend
+- ✅ User registration & JWT authentication
+- ✅ Multi-account financial management
+- ✅ Complete transaction CRUD with pagination/filtering
+- ✅ Category management with hierarchical support
+- ✅ Expense proposal system
+- ✅ Secure logout with token blacklisting
+- ✅ Database migrations (Flyway)
+- ✅ Docker containerization
+- ✅ Global exception handling
+- ✅ Input validation
 
-### Currency Support
-- **ISO Currency Codes**: Standard currency representation
-- **Exchange Rates**: Future currency conversion
-- **Locale Formatting**: Localized number formatting
+### Frontend
+- ✅ Premium dark mode UI with glassmorphism
+- ✅ Mobile-first responsive design
+- ✅ User authentication (login/register/logout)
+- ✅ Dashboard with balance & recent transactions
+- ✅ Transaction management (list, add, infinite scroll)
+- ✅ AI expense ingestion with proposal review
+- ✅ Account management (CRUD)
+- ✅ Category management (CRUD)
+- ✅ Bottom navigation for mobile
+- ✅ Progressive Web App (PWA) support
+- ✅ JWT authentication state management
+- ✅ API proxy configuration
+
+---
+
+## 🚧 Future Enhancements
+
+### Backend
+- Advanced reporting & analytics
+- Budget management with alerts
+- Recurring transactions
+- Multi-currency conversion
+- API versioning
+- Rate limiting
+- Webhooks for notifications
+- Token cleanup job (remove expired revoked tokens)
+
+### Frontend
+- Real-time notifications
+- Data visualization (charts/graphs)
+- Advanced filtering UI
+- Search functionality
+- Export to CSV/PDF
+- Offline mode (Service Worker)
+- Push notifications
+- Settings page
+- User profile management
 
 ---
 
 ## 📚 Additional Resources
 
-### Related Documentation
-- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [JWT.io](https://jwt.io/)
-- [Docker Documentation](https://docs.docker.com/)
-
-### Useful Tools
-- **Postman**: API testing and documentation
-- **PgAdmin**: Database administration
-- **IntelliJ IDEA**: IDE with Spring Boot support
-- **Maven**: Dependency management
+- **Spring Boot**: https://spring.io/projects/spring-boot
+- **Next.js**: https://nextjs.org/
+- **PostgreSQL**: https://www.postgresql.org/docs/
+- **Tailwind CSS**: https://tailwindcss.com/
+- **JWT**: https://jwt.io/
 
 ---
 
-## 📞 Support & Contact
-
-**Author**: Madhav Anchal
-**GitHub**: [madhav2928](https://github.com/madhav2928)
-**Repository**: [ExpenseTracker](https://github.com/madhav2928/ExpenseTracker)
-
----
-
-*This comprehensive summary serves as complete reference documentation for the Expense Tracker backend API project. Last updated: December 2025*
+**Last Updated**: December 2, 2025  
+**Version**: 1.0.0  
+**Status**: Production Ready
